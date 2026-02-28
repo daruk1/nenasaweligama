@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import nenasaLogo from "@/assets/nenasa-logo.jpeg";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -18,8 +19,8 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <GraduationCap className="h-8 w-8 text-accent" />
-          <span className="font-display text-xl font-bold text-foreground">
+          <img src={nenasaLogo} alt="Nenasa Education Logo" className="h-10 w-auto rounded" />
+          <span className="font-display text-lg font-bold text-foreground hidden sm:inline">
             Nenasa <span className="text-accent">Education</span>
           </span>
         </Link>
