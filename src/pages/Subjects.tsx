@@ -1,17 +1,15 @@
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
 import SubjectsSection from "@/components/SubjectsSection";
 import Footer from "@/components/Footer";
 
-const Index = () => (
+const Subjects = () => (
   <div className="min-h-screen bg-background">
     <Navbar />
-    <main>
-      <HeroSection />
+    <main className="pt-8">
       <SubjectsSection />
     </main>
     <Footer />
   </div>
 );
 
-export default Index;
+export default Subjects;
