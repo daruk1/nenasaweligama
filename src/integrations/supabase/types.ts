@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance: {
+        Row: {
+          id: string
+          scanned_at: string
+          student_id: string
+          student_name: string
+        }
+        Insert: {
+          id?: string
+          scanned_at?: string
+          student_id: string
+          student_name: string
+        }
+        Update: {
+          id?: string
+          scanned_at?: string
+          student_id?: string
+          student_name?: string
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           created_at: string
