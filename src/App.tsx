@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Subjects from "./pages/Subjects";
 import Results from "./pages/Results";
 import Register from "./pages/Register";
+import Attendance from "./pages/Attendance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/subjects" element={<Subjects />} />
           <Route path="/results" element={<Results />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/attendance" element={<Attendance />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
