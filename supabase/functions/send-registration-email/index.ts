@@ -38,26 +38,43 @@ serve(async (req) => {
       throw new Error("Failed to save registration");
     }
 
-    // Send notification email to teacher using Supabase's auth.admin
-    // We use a simple approach: send via SMTP relay
-    const emailSubject = `New Registration: ${name} - ${subjects.join(", ")}`;
-    const emailBody = `
-New Student Registration at Nenasa Education
+    // Send email via Resend
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY not configured");
+    }
 
-Student Details:
-- Name: ${name}
-- Email: ${email}
-- Phone: ${phone}
-- Subjects: ${subjects.join(", ")}
-- Registered: ${new Date().toISOString()}
+    const emailRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Nenasa Education <onboarding@resend.dev>",
+        to: [TEACHER_EMAIL],
+        subject: `New Registration: ${name} - ${subjects.join(", ")}`,
+        html: `
+          <h2>New Student Registration - Nenasa Education</h2>
+          <table style="border-collapse:collapse;width:100%;max-width:500px;">
+            <tr><td style="padding:8px;font-weight:bold;">Name</td><td style="padding:8px;">${name}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${email}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Phone</td><td style="padding:8px;">${phone}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Subjects</td><td style="padding:8px;">${subjects.join(", ")}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Registered</td><td style="padding:8px;">${new Date().toISOString()}</td></tr>
+          </table>
+          <p style="margin-top:16px;">Please respond to the student within 24 hours.</p>
+        `,
+      }),
+    });
 
-Please respond to the student within 24 hours.
-    `.trim();
+    const emailData = await emailRes.json();
+    console.log("Resend response:", emailData);
 
-    // Log the registration for now (email will be sent via the configured SMTP)
-    console.log(`📧 Registration notification for teacher (${TEACHER_EMAIL}):`);
-    console.log(`Subject: ${emailSubject}`);
-    console.log(`Body: ${emailBody}`);
+    if (!emailRes.ok) {
+      console.error("Resend error:", emailData);
+      // Don't throw - registration is saved, email is secondary
+    }
 
     return new Response(
       JSON.stringify({ success: true, message: "Registration submitted successfully" }),
