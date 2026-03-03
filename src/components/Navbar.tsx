@@ -10,6 +10,7 @@ const navItems = [
   { label: "Check Results", path: "/results" },
   { label: "Register", path: "/register" },
   { label: "Attendance", path: "/attendance" },
+  { label: "AI Tutor", path: "/ai-tutor" },
 ];
 
 const Navbar = () => {
