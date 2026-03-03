@@ -8,8 +8,8 @@ import Subjects from "./pages/Subjects";
 import Results from "./pages/Results";
 import Register from "./pages/Register";
 import Attendance from "./pages/Attendance";
-import AiTutor from "./pages/AiTutor";
 import NotFound from "./pages/NotFound";
+import DarukAiWidget from "./components/DarukAiWidget";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +25,9 @@ const App = () => (
           <Route path="/results" element={<Results />} />
           <Route path="/register" element={<Register />} />
           <Route path="/attendance" element={<Attendance />} />
-          <Route path="/ai-tutor" element={<AiTutor />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <DarukAiWidget />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
