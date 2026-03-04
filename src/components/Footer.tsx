@@ -14,7 +14,7 @@ const Footer = () => (
           <span>077 50 79 170</span>
         </div>
         <p className="text-sm opacity-70">
-          © {new Date().getFullYear()} Nenasa Education Center. All rights reserved.
+          Developed by Daruka — © {new Date().getFullYear()} Nenasa Education Center. All rights reserved.
         </p>
       </div>
     </div>
