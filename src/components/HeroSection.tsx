@@ -3,6 +3,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, ClipboardCheck } from "lucide-react";
 import heroBg from "@/assets/hero-bg.png";
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 0 && hour < 12) return "Good Morning";
+  if (hour >= 12 && hour < 16) return "Good Afternoon";
+  if (hour >= 16 && hour < 19) return "Good Evening";
+  return "Good Night";
+};
+
 const HeroSection = () => (
   <section className="relative overflow-hidden">
     {/* Background image with overlay */}
@@ -13,6 +21,7 @@ const HeroSection = () => (
 
     <div className="container relative mx-auto px-4 py-24 md:py-36">
       <div className="max-w-2xl">
+        <p className="text-accent font-semibold text-lg mb-2">👋 {getGreeting()}!</p>
         <h1 className="font-display text-4xl font-extrabold leading-tight text-primary-foreground md:text-6xl">
           Unlock Your{" "}
           <span className="text-gradient">Academic Potential</span>
