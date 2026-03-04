@@ -5,10 +5,10 @@ import heroBg from "@/assets/hero-bg.png";
 
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour >= 0 && hour < 12) return "Good Morning";
-  if (hour >= 12 && hour < 16) return "Good Afternoon";
-  if (hour >= 16 && hour < 19) return "Good Evening";
-  return "Good Night";
+  if (hour >= 0 && hour < 12) return { text: "Good Morning", emoji: "🌅" };
+  if (hour >= 12 && hour < 16) return { text: "Good Afternoon", emoji: "☀️" };
+  if (hour >= 16 && hour < 19) return { text: "Good Evening", emoji: "🌇" };
+  return { text: "Good Night", emoji: "🌙" };
 };
 
 const HeroSection = () => (
@@ -21,7 +21,9 @@ const HeroSection = () => (
 
     <div className="container relative mx-auto px-4 py-24 md:py-36">
       <div className="max-w-2xl">
-        <p className="text-accent font-semibold text-lg mb-2">👋 {getGreeting()}!</p>
+        <p className="text-accent font-extrabold text-3xl md:text-5xl mb-4 animate-fade-in flex items-center gap-3">
+          <span className="text-5xl md:text-7xl">{getGreeting().emoji}</span> {getGreeting().text}
+        </p>
         <h1 className="font-display text-4xl font-extrabold leading-tight text-primary-foreground md:text-6xl">
           Unlock Your{" "}
           <span className="text-gradient">Academic Potential</span>
