@@ -1,29 +1,28 @@
 import SubjectCard from "./SubjectCard";
-import { BookOpen, Calculator, FlaskConical, Monitor } from "lucide-react";
 
 const subjects = [
   {
-    title: "English",
-    description: "Build strong language skills with grammar, comprehension, creative writing and communication.",
-    icon: BookOpen,
-    color: "bg-[hsl(220,60%,20%)]",
-  },
-  {
     title: "Mathematics",
     description: "Master arithmetic, algebra, geometry and problem-solving with expert guidance.",
-    icon: Calculator,
+    emoji: "📐",
     color: "bg-[hsl(152,60%,40%)]",
+  },
+  {
+    title: "English",
+    description: "Build strong language skills with grammar, comprehension, creative writing and communication.",
+    emoji: "📚",
+    color: "bg-[hsl(220,60%,20%)]",
   },
   {
     title: "Science",
     description: "Explore biology, chemistry and physics through interactive lessons and experiments.",
-    icon: FlaskConical,
+    emoji: "🔬",
     color: "bg-[hsl(280,60%,45%)]",
   },
   {
     title: "ICT",
     description: "Learn computing fundamentals, programming basics and digital literacy skills.",
-    icon: Monitor,
+    emoji: "💻",
     color: "bg-[hsl(38,92%,50%)]",
   },
 ];
