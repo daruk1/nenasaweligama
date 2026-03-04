@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { UserPlus, Clock, CheckCircle, Mail } from "lucide-react";
+import { UserPlus, Clock, CheckCircle, Mail, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
@@ -19,6 +20,46 @@ const Register = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+        if (!name && session.user.user_metadata?.full_name) {
+          setName(session.user.user_metadata.full_name);
+        }
+        if (!email && session.user.email) {
+          setEmail(session.user.email);
+        }
+      }
+      setLoading(false);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+        if (!name && session.user.user_metadata?.full_name) {
+          setName(session.user.user_metadata.full_name);
+        }
+        if (!email && session.user.email) {
+          setEmail(session.user.email);
+        }
+      }
+      setLoading(false);
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
 
   const toggleSubject = (subject: string) => {
     setSelected((prev) =>
@@ -39,15 +80,11 @@ const Register = () => {
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-registration-email", {
+      const { error } = await supabase.functions.invoke("send-registration-email", {
         body: { name, email, phone, subjects: selected },
       });
-
       if (error) throw error;
-
       setIsSubmitted(true);
-      setName("");
-      setEmail("");
       setPhone("");
       setSelected([]);
     } catch (err) {
@@ -57,6 +94,14 @@ const Register = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   if (isSubmitted) {
     return (
@@ -76,7 +121,6 @@ const Register = () => {
                   Your registration has been sent to our teacher successfully.
                 </p>
               </div>
-
               <div className="flex items-center gap-3 rounded-xl bg-accent/10 px-6 py-4">
                 <Clock className="h-8 w-8 text-accent" />
                 <div className="text-left">
@@ -84,12 +128,10 @@ const Register = () => {
                   <p className="text-sm text-muted-foreground">Please check your email for confirmation</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
                 <span>Check your inbox and spam folder</span>
               </div>
-
               <Button
                 onClick={() => setIsSubmitted(false)}
                 className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
@@ -116,7 +158,10 @@ const Register = () => {
             </div>
             <CardTitle className="font-display text-2xl">Register for Classes</CardTitle>
             <CardDescription>
-              Fill out the form below to enroll in your desired subjects.
+              Signed in as {user?.email}
+              <button onClick={handleSignOut} className="ml-2 text-accent hover:underline inline-flex items-center gap-1">
+                <LogOut className="h-3 w-3" /> Sign out
+              </button>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -160,7 +205,6 @@ const Register = () => {
               >
                 {isSubmitting ? "Submitting..." : "Register Now"}
               </Button>
-
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>We'll reply within 24 hours after registration</span>
