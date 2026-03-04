@@ -87,6 +87,14 @@ async function streamChat({
   onDone();
 }
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 0 && hour < 12) return "Good Morning";
+  if (hour >= 12 && hour < 16) return "Good Afternoon";
+  if (hour >= 16 && hour < 19) return "Good Evening";
+  return "Good Night";
+};
+
 const DarukAiWidget = () => {
   const [open, setOpen] = useState(false);
   const [grade, setGrade] = useState("");
@@ -109,7 +117,7 @@ const DarukAiWidget = () => {
     setStarted(true);
     setMessages([{
       role: "assistant",
-      content: `👋 Hi! I'm **Daruk AI**.\n\nYou're studying **${subject}** in **${grade}**. Ask me anything!\n\n💡 Homework help, concept explanations, exam tips — I'm here for you.`,
+      content: `👋 ${getGreeting()}! I'm **Daruk AI**.\n\nYou're studying **${subject}** in **${grade}**. Ask me anything!\n\n💡 Homework help, concept explanations, exam tips — I'm here for you.`,
     }]);
   };
 
@@ -199,7 +207,8 @@ const DarukAiWidget = () => {
                 <Sparkles className="h-7 w-7 text-accent" />
               </div>
               <div className="text-center">
-                <h2 className="text-lg font-bold text-foreground">Daruk AI</h2>
+                <h2 className="text-lg font-bold text-foreground">{getGreeting()}! 👋</h2>
+                <p className="text-sm font-semibold text-accent mt-0.5">Daruk AI</p>
                 <p className="text-xs text-muted-foreground mt-1">Your personal study assistant</p>
               </div>
               <div className="w-full space-y-3">
