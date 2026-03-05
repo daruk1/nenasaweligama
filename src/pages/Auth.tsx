@@ -8,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Mail, Lock, User, LogIn } from "lucide-react";
+import { Mail, Lock, User, LogIn, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import nenasaLogo from "@/assets/nenasa-logo.jpeg";
+import englishPromo from "@/assets/english-promo.jpeg";
+import englishPromo2028 from "@/assets/english-promo-2028.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -75,7 +77,59 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 py-12">
+        {/* Promo banners */}
+        <div className="mx-auto max-w-4xl mb-12">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground text-center mb-8">
+            🎓 Our Programmes
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* 4 Month English Programme */}
+            <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--card-shadow)] transition-transform hover:scale-[1.02]">
+              <img
+                src={englishPromo}
+                alt="4 Month English Programme"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-5">
+                <h3 className="font-display text-lg font-bold text-foreground">
+                  4 Month English Programme
+                </h3>
+                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  <li>📍 NEW Nenasa - Weligama</li>
+                  <li>📅 Every Saturday, 6.00 PM - 8.00 PM</li>
+                  <li>📞 077 50 79 170</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* A/L General English 2028 */}
+            <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--card-shadow)] transition-transform hover:scale-[1.02]">
+              <img
+                src={englishPromo2028}
+                alt="A/L General English 2028 - Chandana Hettiarachchi"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-5">
+                <h3 className="font-display text-lg font-bold text-foreground">
+                  A/L General English 2028
+                </h3>
+                <p className="text-sm font-semibold text-accent">Cool English For Your Future</p>
+                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  <li>📍 Art House - මාතර</li>
+                  <li>📅 මාර්තු 03 සිට සෑම අඟහරුවාදාම පෙ.ව. 10.30 ට</li>
+                  <li>📞 077 50 79 170</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-center mt-6 text-muted-foreground text-sm">
+            Sign up or log in below to register for classes <ArrowRight className="inline h-4 w-4" />
+          </p>
+        </div>
+
+        {/* Auth Card */}
         <Card className="mx-auto max-w-md border-0 shadow-[var(--card-shadow)]">
           <CardHeader className="text-center">
             <div className="mx-auto mb-3">
