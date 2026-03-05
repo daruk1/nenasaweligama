@@ -59,7 +59,7 @@ const PromoSection = () => (
           </p>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>📍 Art House - මාතර</li>
-            <li>📅 සිට සෑම අඟහරුවාදාම පෙ.ව. 10.30 ට</li>
+            <li>📅 මාර්තු 03 සිට සෑම අඟහරුවාදාම පෙ.ව. 10.30 ට</li>
             <li>📞 077 50 79 170</li>
           </ul>
           <Link to="/register" className="mt-6 inline-block">
