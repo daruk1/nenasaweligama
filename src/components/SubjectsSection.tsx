@@ -1,4 +1,5 @@
 import SubjectCard from "./SubjectCard";
+import FadeIn from "./FadeIn";
 
 const subjects = [
   {
@@ -30,17 +31,21 @@ const subjects = [
 const SubjectsSection = () => (
   <section className="py-20">
     <div className="container mx-auto px-4">
-      <div className="mb-12 text-center">
-        <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-          Our Subjects
-        </h2>
-        <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-          We offer comprehensive classes across four key subjects to help students excel.
-        </p>
-      </div>
+      <FadeIn>
+        <div className="mb-12 text-center">
+          <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
+            Our Subjects
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
+            We offer comprehensive classes across four key subjects to help students excel.
+          </p>
+        </div>
+      </FadeIn>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {subjects.map((subject) => (
-          <SubjectCard key={subject.title} {...subject} />
+        {subjects.map((subject, i) => (
+          <FadeIn key={subject.title} delay={150 * (i + 1)}>
+            <SubjectCard {...subject} />
+          </FadeIn>
         ))}
       </div>
     </div>
