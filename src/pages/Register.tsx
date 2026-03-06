@@ -255,7 +255,27 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button
+              {/* Subject selection */}
+              <div className="space-y-3">
+                <Label>Select Subjects</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {subjects.map((subject) => (
+                    <label
+                      key={subject}
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
+                        selectedSubjects.includes(subject) ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
+                      }`}
+                    >
+                      <Checkbox
+                        checked={selectedSubjects.includes(subject)}
+                        onCheckedChange={() => toggleSubject(subject)}
+                      />
+                      <span className="text-sm font-medium">{subject}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
                 type="submit"
                 className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                 size="lg"
