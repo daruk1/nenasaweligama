@@ -10,8 +10,25 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { UserPlus, Clock, CheckCircle, Mail, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import FadeIn from "@/components/FadeIn";
+import englishPromo from "@/assets/english-promo.jpeg";
+import englishPromo2028 from "@/assets/english-promo-2028.png";
 
-const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
+const classes = [
+  {
+    id: "4-month-english",
+    title: "4 Month English Programme",
+    image: englishPromo,
+    details: ["📍 NEW Nenasa - Weligama", "📅 Every Saturday, 6.00 PM - 8.00 PM"],
+  },
+  {
+    id: "al-english-2028",
+    title: "A/L General English 2028",
+    subtitle: "Cool English For Your Future",
+    image: englishPromo2028,
+    details: ["📍 Art House - මාතර", "📅 මාර්තු 03 සිට සෑම අඟහරුවාදාම පෙ.ව. 10.30 ට"],
+  },
+] as const;
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -61,9 +78,9 @@ const Register = () => {
     navigate("/");
   };
 
-  const toggleSubject = (subject: string) => {
+  const toggleClass = (classId: string) => {
     setSelected((prev) =>
-      prev.includes(subject) ? prev.filter((s) => s !== subject) : [...prev, subject]
+      prev.includes(classId) ? prev.filter((s) => s !== classId) : [...prev, classId]
     );
   };
 
@@ -74,14 +91,18 @@ const Register = () => {
       return;
     }
     if (selected.length === 0) {
-      toast.error("Please select at least one subject.");
+      toast.error("Please select at least one class.");
       return;
     }
+
+    const selectedNames = selected.map(
+      (id) => classes.find((c) => c.id === id)?.title ?? id
+    );
 
     setIsSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke("send-registration-email", {
-        body: { name, email, phone, subjects: selected },
+        body: { name, email, phone, subjects: selectedNames },
       });
       if (error) throw error;
       setIsSubmitted(true);
@@ -151,7 +172,7 @@ const Register = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-16">
-        <Card className="mx-auto max-w-lg border-0 shadow-[var(--card-shadow)]">
+        <Card className="mx-auto max-w-2xl border-0 shadow-[var(--card-shadow)]">
           <CardHeader className="text-center">
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
               <UserPlus className="h-6 w-6 text-accent" />
@@ -178,25 +199,51 @@ const Register = () => {
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input id="phone" placeholder="07X XXX XXXX" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
+
+              {/* Class selection with promo cards */}
               <div className="space-y-3">
-                <Label>Select Subjects</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {subjects.map((subject) => (
-                    <label
-                      key={subject}
-                      className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
-                        selected.includes(subject) ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
-                      }`}
-                    >
-                      <Checkbox
-                        checked={selected.includes(subject)}
-                        onCheckedChange={() => toggleSubject(subject)}
-                      />
-                      <span className="text-sm font-medium">{subject}</span>
-                    </label>
+                <Label>Select Classes</Label>
+                <div className="grid gap-4">
+                  {classes.map((cls, i) => (
+                    <FadeIn key={cls.id} delay={150 * (i + 1)} direction="up">
+                      <label
+                        className={`group flex cursor-pointer gap-4 rounded-2xl border-2 p-3 transition-all duration-300 ${
+                          selected.includes(cls.id)
+                            ? "border-accent bg-accent/5 shadow-lg shadow-accent/10"
+                            : "border-border hover:border-accent/40"
+                        }`}
+                      >
+                        <div className="flex-shrink-0 pt-1">
+                          <Checkbox
+                            checked={selected.includes(cls.id)}
+                            onCheckedChange={() => toggleClass(cls.id)}
+                          />
+                        </div>
+                        <div className="flex flex-1 flex-col sm:flex-row gap-4">
+                          <div className="overflow-hidden rounded-xl flex-shrink-0">
+                            <img
+                              src={cls.image}
+                              alt={cls.title}
+                              className="h-28 w-full sm:w-40 object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-display text-base font-bold text-foreground">{cls.title}</h3>
+                            {"subtitle" in cls && cls.subtitle && (
+                              <p className="text-xs font-semibold text-accent mt-0.5">{cls.subtitle}</p>
+                            )}
+                            <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                              {cls.details.map((d) => <li key={d}>{d}</li>)}
+                              <li>📞 077 50 79 170</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </label>
+                    </FadeIn>
                   ))}
                 </div>
               </div>
+
               <Button
                 type="submit"
                 className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
