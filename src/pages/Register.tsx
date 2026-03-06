@@ -15,6 +15,8 @@ import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
 
 const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
+
+const classes = [
   {
     id: "4-month-english",
     title: "4 Month English Programme",
