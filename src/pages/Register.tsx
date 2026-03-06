@@ -112,12 +112,13 @@ const Register = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke("send-registration-email", {
-        body: { name, email, phone, subjects: selectedNames },
+        body: { name, email, phone, subjects: allSelections },
       });
       if (error) throw error;
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
+      setSelectedSubjects([]);
     } catch (err) {
       console.error("Registration error:", err);
       toast.error("Something went wrong. Please try again.");
