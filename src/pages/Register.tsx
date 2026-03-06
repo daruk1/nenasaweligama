@@ -99,14 +99,15 @@ const Register = () => {
       toast.error("Please fill in all fields.");
       return;
     }
-    if (selected.length === 0) {
-      toast.error("Please select at least one class.");
+    if (selected.length === 0 && selectedSubjects.length === 0) {
+      toast.error("Please select at least one class or subject.");
       return;
     }
 
-    const selectedNames = selected.map(
+    const selectedClassNames = selected.map(
       (id) => classes.find((c) => c.id === id)?.title ?? id
     );
+    const allSelections = [...selectedClassNames, ...selectedSubjects];
 
     setIsSubmitting(true);
     try {
