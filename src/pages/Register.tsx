@@ -14,6 +14,8 @@ import FadeIn from "@/components/FadeIn";
 import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
 
+const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
+
 const classes = [
   {
     id: "4-month-english",
@@ -35,6 +37,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -84,30 +87,38 @@ const Register = () => {
     );
   };
 
+  const toggleSubject = (subject: string) => {
+    setSelectedSubjects((prev) =>
+      prev.includes(subject) ? prev.filter((s) => s !== subject) : [...prev, subject]
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !phone) {
       toast.error("Please fill in all fields.");
       return;
     }
-    if (selected.length === 0) {
-      toast.error("Please select at least one class.");
+    if (selected.length === 0 && selectedSubjects.length === 0) {
+      toast.error("Please select at least one class or subject.");
       return;
     }
 
-    const selectedNames = selected.map(
+    const selectedClassNames = selected.map(
       (id) => classes.find((c) => c.id === id)?.title ?? id
     );
+    const allSelections = [...selectedClassNames, ...selectedSubjects];
 
     setIsSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke("send-registration-email", {
-        body: { name, email, phone, subjects: selectedNames },
+        body: { name, email, phone, subjects: allSelections },
       });
       if (error) throw error;
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
+      setSelectedSubjects([]);
     } catch (err) {
       console.error("Registration error:", err);
       toast.error("Something went wrong. Please try again.");
@@ -244,8 +255,28 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button
-                type="submit"
+              {/* Subject selection */}
+              <div className="space-y-3">
+                <Label>Select Subjects</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {subjects.map((subject) => (
+                    <label
+                      key={subject}
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
+                        selectedSubjects.includes(subject) ? "border-accent bg-accent/5" : "border-border hover:border-accent/40"
+                      }`}
+                    >
+                      <Checkbox
+                        checked={selectedSubjects.includes(subject)}
+                        onCheckedChange={() => toggleSubject(subject)}
+                      />
+                      <span className="text-sm font-medium">{subject}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+                <Button
                 className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                 size="lg"
                 disabled={isSubmitting}
