@@ -276,7 +276,7 @@ const Register = () => {
                 </div>
               </div>
 
-                type="submit"
+                <Button
                 className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                 size="lg"
                 disabled={isSubmitting}
