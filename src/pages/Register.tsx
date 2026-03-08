@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { UserPlus, Clock, CheckCircle, Mail, LogOut, Download, QrCode } from "lucide-react";
+import { UserPlus, Clock, CheckCircle, Mail, LogOut, Download, QrCode, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import FadeIn from "@/components/FadeIn";
@@ -41,7 +41,7 @@ const Register = () => {
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [registrationData, setRegistrationData] = useState<{ id: string; name: string } | null>(null);
+  const [registrationData, setRegistrationData] = useState<{ id: string; name: string; subjects: string[] } | null>(null);
   const [user, setUser] = useState<any>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
@@ -118,7 +118,7 @@ const Register = () => {
         body: { name, email, phone, subjects: allSelections },
       });
       if (error) throw error;
-      setRegistrationData({ id: responseData.registrationId, name });
+      setRegistrationData({ id: responseData.registrationId, name, subjects: allSelections });
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
@@ -169,8 +169,18 @@ const Register = () => {
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
+  const handleCopyId = () => {
+    if (!registrationData) return;
+    navigator.clipboard.writeText(registrationData.id);
+    toast.success("ID copied to clipboard!");
+  };
+
   if (isSubmitted && registrationData) {
-    const qrData = JSON.stringify({ name: registrationData.name, id: registrationData.id });
+    const qrData = JSON.stringify({
+      name: registrationData.name,
+      id: registrationData.id,
+      subjects: registrationData.subjects,
+    });
 
     return (
       <div className="min-h-screen bg-background">
@@ -194,7 +204,22 @@ const Register = () => {
               <div ref={qrRef} className="flex flex-col items-center gap-3 rounded-2xl border-2 border-accent/20 bg-card p-6 shadow-md">
                 <QRCodeSVG value={qrData} size={200} level="H" />
                 <p className="text-lg font-bold text-foreground">{registrationData.name}</p>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {registrationData.subjects.map((s) => (
+                    <span key={s} className="rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
+                      {s}
+                    </span>
+                  ))}
+                </div>
                 <p className="text-xs text-muted-foreground">ID: {registrationData.id.slice(0, 8)}</p>
+              </div>
+
+              {/* Copyable ID */}
+              <div className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2">
+                <span className="text-sm font-mono text-foreground">{registrationData.id}</span>
+                <Button variant="ghost" size="icon" onClick={handleCopyId} className="h-7 w-7">
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
               </div>
 
               <Button
