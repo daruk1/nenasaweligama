@@ -47,11 +47,15 @@ Your role:
         },
         body: JSON.stringify({
           model: "google/gemma-3-12b-it:free",
-            messages: [
-              { role: "user", content: `[System Instructions - Follow these carefully]\n${systemPrompt}` },
-              { role: "assistant", content: "Understood! I'm Nenasa AI Tutor, ready to help. How can I assist you today? 😊" },
-              ...messages,
-            ],
+          messages: messages.map((msg: { role: string; content: unknown }, i: number) => {
+            if (i === 0 && msg.role === "user") {
+              const content = typeof msg.content === "string"
+                ? `${systemPrompt}\n\nStudent's question: ${msg.content}`
+                : msg.content;
+              return { ...msg, content };
+            }
+            return msg;
+          }),
           stream: true,
         }),
       }
