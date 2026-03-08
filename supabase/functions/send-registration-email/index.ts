@@ -79,7 +79,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Registration submitted successfully" }),
+      JSON.stringify({ success: true, message: "Registration submitted successfully", registrationId: regData.id }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
