@@ -20,18 +20,21 @@ export type Database = {
           scanned_at: string
           student_id: string
           student_name: string
+          subject: string
         }
         Insert: {
           id?: string
           scanned_at?: string
           student_id: string
           student_name: string
+          subject?: string
         }
         Update: {
           id?: string
           scanned_at?: string
           student_id?: string
           student_name?: string
+          subject?: string
         }
         Relationships: []
       }
