@@ -52,7 +52,7 @@ const MyQR = () => {
   }, [user]);
 
   const handleDownloadQR = (reg: Registration) => {
-    const qrData = JSON.stringify({ name: reg.name, id: reg.id });
+    const qrData = JSON.stringify({ name: reg.name, id: reg.id, grade: reg.grade, subjects: reg.subjects, type: "payment" });
     const svg = document.getElementById(`qr-${reg.id}`)?.querySelector("svg");
     if (!svg) return;
     const svgData = new XMLSerializer().serializeToString(svg);
