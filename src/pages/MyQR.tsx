@@ -115,6 +115,7 @@ const MyQR = () => {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
             {registrations.map((reg) => {
               const qrData = JSON.stringify({ name: reg.name, id: reg.id, grade: reg.grade, subjects: reg.subjects, type: "payment" });
+              return (
                 <Card key={reg.id} className="border-0 shadow-[var(--card-shadow)]">
                   <CardContent className="flex flex-col items-center gap-4 py-8">
                     <div id={`qr-${reg.id}`} className="rounded-2xl border-2 border-accent/20 bg-card p-4">
