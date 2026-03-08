@@ -55,7 +55,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Nenasa Education <onboarding@resend.dev>",
         to: [TEACHER_EMAIL],
-        subject: `New Registration: ${name} - ${subjects.join(", ")}`,
+        subject: `New Registration: ${name} - ${grade || "N/A"} - ${subjects.join(", ")}`,
         html: `
           <h2>New Student Registration - Nenasa Education</h2>
           <table style="border-collapse:collapse;width:100%;max-width:500px;">
