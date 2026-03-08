@@ -16,6 +16,7 @@ import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
 
 const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
+const grades = ["Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11"] as const;
 
 const classes = [
   {
