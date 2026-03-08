@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import nenasaLogo from "@/assets/nenasa-logo.jpeg";
-import { Phone, MapPin, Mail } from "lucide-react";
+import { Phone, MapPin, MessageCircle } from "lucide-react";
 
 const Footer = () => (
   <footer className="border-t bg-primary py-12 text-primary-foreground">
@@ -31,7 +31,12 @@ const Footer = () => (
         <div className="flex flex-col items-center md:items-start gap-3">
           <h3 className="font-display text-lg font-bold">Contact Us</h3>
           <div className="flex flex-col gap-2 text-sm text-primary-foreground/70">
-            <span className="flex items-center gap-2"><Phone className="h-4 w-4 text-accent"/> 077 50 79 170</span>
+            <a href="tel:+94775079170" className="flex items-center gap-2 hover:text-accent transition-colors">
+              <Phone className="h-4 w-4 text-accent"/> Call: 077 50 79 170
+            </a>
+            <a href="https://wa.me/94775079170" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-accent transition-colors">
+              <MessageCircle className="h-4 w-4 text-accent"/> WhatsApp: 077 50 79 170
+            </a>
             <span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-accent"/> Weligama, Sri Lanka</span>
           </div>
         </div>
