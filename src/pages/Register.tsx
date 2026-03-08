@@ -186,7 +186,9 @@ const Register = () => {
     const qrData = JSON.stringify({
       name: registrationData.name,
       id: registrationData.id,
+      grade: registrationData.grade,
       subjects: registrationData.subjects,
+      type: "payment",
     });
 
     return (
