@@ -283,183 +283,180 @@ const Attendance = () => {
       <Navbar />
 
       <main className="container mx-auto flex flex-1 flex-col items-center gap-6 px-4 py-10">
-        <div className="flex items-center gap-3">
-          <ShieldCheck className="h-6 w-6 text-accent" />
-          <h1 className="font-display text-3xl font-bold text-foreground">
-            Teacher Attendance Panel
-          </h1>
-        </div>
-
-        {availableSubjects.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium">No registered classes yet</p>
-            <p className="text-sm">Students need to register for subjects first.</p>
-          </div>
+        {!adminVerified ? (
+          <Card className="w-full max-w-md border-0 shadow-lg">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
+                <Lock className="h-7 w-7 text-accent" />
+              </div>
+              <CardTitle className="font-display text-2xl">Admin Access</CardTitle>
+              <CardDescription>Enter the admin code to access the attendance panel</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAdminVerify} className="space-y-4">
+                <Input
+                  type="password"
+                  placeholder="Enter admin code"
+                  value={adminCode}
+                  onChange={(e) => setAdminCode(e.target.value)}
+                  required
+                />
+                {adminError && (
+                  <p className="text-sm text-destructive text-center">{adminError}</p>
+                )}
+                <Button
+                  type="submit"
+                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold gap-2"
+                  disabled={verifying}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  {verifying ? "Verifying..." : "Enter Admin Panel"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         ) : (
           <>
-            {/* Subject Selector */}
-            <div className="flex flex-wrap justify-center gap-3">
-              {availableSubjects.map((sub) => (
-                <Button
-                  key={sub}
-                  variant={activeSubject === sub ? "default" : "outline"}
-                  onClick={() => setActiveSubject(sub)}
-                  className="gap-2"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  {sub}
-                  <Badge variant="secondary" className="ml-1 text-xs">
-                    {registeredStudents.filter((s) => s.subjects?.includes(sub)).length}
-                  </Badge>
-                </Button>
-              ))}
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="h-6 w-6 text-accent" />
+              <h1 className="font-display text-3xl font-bold text-foreground">
+                Teacher Attendance Panel
+              </h1>
             </div>
 
-            <Badge variant="secondary" className="text-base px-4 py-1">
-              📅 {new Date(today).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-              {" — "}{activeSubject}
-            </Badge>
-
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-2xl">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="scan" className="gap-2">
-                  <Camera className="h-4 w-4" />
-                  Scan
-                </TabsTrigger>
-                <TabsTrigger value="upload" className="gap-2">
-                  <Upload className="h-4 w-4" />
-                  Upload
-                </TabsTrigger>
-                <TabsTrigger value="qr" className="gap-2">
-                  <QrCode className="h-4 w-4" />
-                  Class QR
-                </TabsTrigger>
-                <TabsTrigger value="records" className="gap-2" onClick={fetchRecords}>
-                  <List className="h-4 w-4" />
-                  Records
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Live Scan Tab */}
-              <TabsContent value="scan" className="flex flex-col items-center gap-6">
-                <p className="text-muted-foreground text-center">
-                  Scan student QR code to mark attendance for <strong>{activeSubject}</strong>
-                </p>
-                <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border-2 border-border shadow-lg">
-                  <QrReader
-                    constraints={{ facingMode: "environment" }}
-                    onResult={handleLiveScan}
-                    scanDelay={1000}
-                    containerStyle={{ width: "100%" }}
-                    videoStyle={{ borderRadius: "1rem" }}
-                  />
-                  {status === "idle" && (
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                      <ScanLine className="h-16 w-16 animate-pulse text-accent opacity-60" />
-                    </div>
-                  )}
-                </div>
-                <StatusNotification />
-              </TabsContent>
-
-              {/* Upload QR Tab */}
-              <TabsContent value="upload" className="flex flex-col items-center gap-6">
-                <p className="text-muted-foreground text-center">
-                  Upload a student QR image to mark for <strong>{activeSubject}</strong>
-                </p>
-                <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-border p-10">
-                  <Upload className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Select a QR code image (PNG, JPG)</p>
-                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={processing}>
-                    Choose Image
-                  </Button>
-                </div>
-                <StatusNotification />
-              </TabsContent>
-
-              {/* Class QR Code Tab */}
-              <TabsContent value="qr" className="flex flex-col items-center gap-6">
-                <p className="text-muted-foreground text-center">
-                  QR code for <strong>{activeSubject}</strong> class today
-                </p>
-                <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-border p-8 bg-card shadow-lg">
-                  <QRCodeSVG value={subjectQrData} size={220} level="H" />
-                  <span className="text-lg font-bold text-foreground">{activeSubject}</span>
-                  <span className="text-sm text-muted-foreground">{today}</span>
-                </div>
-              </TabsContent>
-
-              {/* Records Tab */}
-              <TabsContent value="records" className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-muted-foreground">
-                    {activeSubject} — {attendanceList.filter((s) => s.arrived).length}/{subjectStudents.length} arrived
-                  </p>
-                  <Button variant="outline" size="sm" onClick={fetchRecords} disabled={loadingRecords} className="gap-2">
-                    <RefreshCw className={`h-4 w-4 ${loadingRecords ? "animate-spin" : ""}`} />
-                    Refresh
-                  </Button>
+            {availableSubjects.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground">
+                <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium">No registered classes yet</p>
+                <p className="text-sm">Students need to register for subjects first.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {availableSubjects.map((sub) => (
+                    <Button
+                      key={sub}
+                      variant={activeSubject === sub ? "default" : "outline"}
+                      onClick={() => setActiveSubject(sub)}
+                      className="gap-2"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      {sub}
+                      <Badge variant="secondary" className="ml-1 text-xs">
+                        {registeredStudents.filter((s) => s.subjects?.includes(sub)).length}
+                      </Badge>
+                    </Button>
+                  ))}
                 </div>
 
-                <div className="rounded-xl border border-border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-12">#</TableHead>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {subjectStudents.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                            {loadingRecords ? "Loading..." : "No students registered for " + activeSubject + "."}
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        attendanceList.map((student, i) => (
-                          <TableRow key={student.id}>
-                            <TableCell className="font-medium">{i + 1}</TableCell>
-                            <TableCell>{student.name}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{student.email}</TableCell>
-                            <TableCell>
-                              {student.scannedAt
-                                ? new Date(student.scannedAt).toLocaleTimeString()
-                                : "—"}
-                            </TableCell>
-                            <TableCell>
-                              {student.arrived ? (
-                                <Badge className="bg-green-100 text-green-800 border-green-300 gap-1">
-                                  <CheckCircle2 className="h-3 w-3" /> Arrived
-                                </Badge>
-                              ) : (
-                                <Badge variant="destructive" className="gap-1">
-                                  <XCircle className="h-3 w-3" /> Not Arrived
-                                </Badge>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))
+                <Badge variant="secondary" className="text-base px-4 py-1">
+                  📅 {new Date(today).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                  {" — "}{activeSubject}
+                </Badge>
+
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-2xl">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="scan" className="gap-2"><Camera className="h-4 w-4" />Scan</TabsTrigger>
+                    <TabsTrigger value="upload" className="gap-2"><Upload className="h-4 w-4" />Upload</TabsTrigger>
+                    <TabsTrigger value="qr" className="gap-2"><QrCode className="h-4 w-4" />Class QR</TabsTrigger>
+                    <TabsTrigger value="records" className="gap-2" onClick={fetchRecords}><List className="h-4 w-4" />Records</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="scan" className="flex flex-col items-center gap-6">
+                    <p className="text-muted-foreground text-center">
+                      Scan student QR code to mark attendance for <strong>{activeSubject}</strong>
+                    </p>
+                    <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border-2 border-border shadow-lg">
+                      <QrReader constraints={{ facingMode: "environment" }} onResult={handleLiveScan} scanDelay={1000} containerStyle={{ width: "100%" }} videoStyle={{ borderRadius: "1rem" }} />
+                      {status === "idle" && (
+                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                          <ScanLine className="h-16 w-16 animate-pulse text-accent opacity-60" />
+                        </div>
                       )}
-                    </TableBody>
-                  </Table>
-                </div>
+                    </div>
+                    <StatusNotification />
+                  </TabsContent>
 
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>✅ {attendanceList.filter((s) => s.arrived).length} arrived</span>
-                  <span>❌ {attendanceList.filter((s) => !s.arrived).length} not arrived</span>
-                  <span>Total: {subjectStudents.length} student{subjectStudents.length !== 1 ? "s" : ""}</span>
-                </div>
-              </TabsContent>
-            </Tabs>
+                  <TabsContent value="upload" className="flex flex-col items-center gap-6">
+                    <p className="text-muted-foreground text-center">
+                      Upload a student QR image to mark for <strong>{activeSubject}</strong>
+                    </p>
+                    <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-border p-10">
+                      <Upload className="h-12 w-12 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Select a QR code image (PNG, JPG)</p>
+                      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                      <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={processing}>Choose Image</Button>
+                    </div>
+                    <StatusNotification />
+                  </TabsContent>
+
+                  <TabsContent value="qr" className="flex flex-col items-center gap-6">
+                    <p className="text-muted-foreground text-center">QR code for <strong>{activeSubject}</strong> class today</p>
+                    <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-border p-8 bg-card shadow-lg">
+                      <QRCodeSVG value={subjectQrData} size={220} level="H" />
+                      <span className="text-lg font-bold text-foreground">{activeSubject}</span>
+                      <span className="text-sm text-muted-foreground">{today}</span>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="records" className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <p className="text-muted-foreground">
+                        {activeSubject} — {attendanceList.filter((s) => s.arrived).length}/{subjectStudents.length} arrived
+                      </p>
+                      <Button variant="outline" size="sm" onClick={fetchRecords} disabled={loadingRecords} className="gap-2">
+                        <RefreshCw className={`h-4 w-4 ${loadingRecords ? "animate-spin" : ""}`} />Refresh
+                      </Button>
+                    </div>
+                    <div className="rounded-xl border border-border overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">#</TableHead>
+                            <TableHead>Student Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Time</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {subjectStudents.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                                {loadingRecords ? "Loading..." : "No students registered for " + activeSubject + "."}
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            attendanceList.map((student, i) => (
+                              <TableRow key={student.id}>
+                                <TableCell className="font-medium">{i + 1}</TableCell>
+                                <TableCell>{student.name}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{student.email}</TableCell>
+                                <TableCell>{student.scannedAt ? new Date(student.scannedAt).toLocaleTimeString() : "—"}</TableCell>
+                                <TableCell>
+                                  {student.arrived ? (
+                                    <Badge className="bg-green-100 text-green-800 border-green-300 gap-1"><CheckCircle2 className="h-3 w-3" /> Arrived</Badge>
+                                  ) : (
+                                    <Badge variant="destructive" className="gap-1"><XCircle className="h-3 w-3" /> Not Arrived</Badge>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>✅ {attendanceList.filter((s) => s.arrived).length} arrived</span>
+                      <span>❌ {attendanceList.filter((s) => !s.arrived).length} not arrived</span>
+                      <span>Total: {subjectStudents.length} student{subjectStudents.length !== 1 ? "s" : ""}</span>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </>
+            )}
           </>
         )}
-      </main>
 
       <Footer />
     </div>
