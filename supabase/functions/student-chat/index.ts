@@ -37,34 +37,65 @@ Your role:
   3. ✏️ Practice questions (2-3)
   4. 💡 Tips to remember`;
 
-    // Convert messages to Google AI format
-    const googleMessages = messages.map((msg: { role: string; content: unknown }) => {
+    // Convert messages to Google AI format, filtering properly
+    const googleMessages: Array<{ role: string; parts: Array<Record<string, unknown>> }> = [];
+
+    for (const msg of messages) {
       const role = msg.role === "assistant" ? "model" : "user";
+
+      let parts: Array<Record<string, unknown>>;
       if (typeof msg.content === "string") {
-        return { role, parts: [{ text: msg.content }] };
-      }
-      // Handle multimodal content (images)
-      const parts = (msg.content as Array<{ type: string; text?: string; image_url?: { url: string } }>).map((part) => {
-        if (part.type === "text") return { text: part.text };
-        if (part.type === "image_url" && part.image_url?.url) {
-          const match = part.image_url.url.match(/^data:(.*?);base64,(.*)$/);
-          if (match) {
-            return { inline_data: { mime_type: match[1], data: match[2] } };
+        parts = [{ text: msg.content }];
+      } else if (Array.isArray(msg.content)) {
+        parts = msg.content.map((part: { type: string; text?: string; image_url?: { url: string } }) => {
+          if (part.type === "text") return { text: part.text || "" };
+          if (part.type === "image_url" && part.image_url?.url) {
+            const match = part.image_url.url.match(/^data:(.*?);base64,(.*)$/);
+            if (match) {
+              return { inline_data: { mime_type: match[1], data: match[2] } };
+            }
           }
-        }
-        return { text: "" };
-      });
-      return { role, parts };
-    });
+          return { text: "" };
+        });
+      } else {
+        parts = [{ text: String(msg.content || "") }];
+      }
+
+      googleMessages.push({ role, parts });
+    }
+
+    // Google AI requires first message to be from "user" — skip leading model messages
+    const firstUserIdx = googleMessages.findIndex((m) => m.role === "user");
+    const filteredMessages = firstUserIdx >= 0 ? googleMessages.slice(firstUserIdx) : googleMessages;
+
+    // Ensure alternating roles (Google AI requirement) — merge consecutive same-role messages
+    const mergedMessages: typeof filteredMessages = [];
+    for (const msg of filteredMessages) {
+      const last = mergedMessages[mergedMessages.length - 1];
+      if (last && last.role === msg.role) {
+        last.parts.push(...msg.parts);
+      } else {
+        mergedMessages.push({ ...msg, parts: [...msg.parts] });
+      }
+    }
+
+    if (mergedMessages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No valid messages provided." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("Sending to Gemini 2.0 Flash, messages count:", mergedMessages.length);
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:streamGenerateContent?alt=sse&key=${GOOGLE_AI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${GOOGLE_AI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: googleMessages,
+          contents: mergedMessages,
           generationConfig: {
             temperature: 0.7,
             maxOutputTokens: 2048,
@@ -117,7 +148,6 @@ Your role:
               const parsed = JSON.parse(jsonStr);
               const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
               if (text) {
-                // Convert to OpenAI-compatible SSE format
                 const chunk = {
                   choices: [{ delta: { content: text } }],
                 };
