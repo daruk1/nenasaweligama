@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { UserPlus, Clock, CheckCircle, Mail, LogOut } from "lucide-react";
+import { UserPlus, Clock, CheckCircle, Mail, LogOut, Download, QrCode } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { QRCodeSVG } from "qrcode.react";
 import FadeIn from "@/components/FadeIn";
 import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
