@@ -122,6 +122,11 @@ const MyQR = () => {
                     </div>
                     <div className="text-center">
                       <p className="text-lg font-bold text-foreground">{reg.name}</p>
+                      {reg.grade && (
+                        <span className="inline-block rounded-full bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+                          {reg.grade}
+                        </span>
+                      )}
                       <p className="text-xs text-muted-foreground">ID: {reg.id.slice(0, 8)}</p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-1">

@@ -62,6 +62,7 @@ serve(async (req) => {
             <tr><td style="padding:8px;font-weight:bold;">Name</td><td style="padding:8px;">${name}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${email}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Phone</td><td style="padding:8px;">${phone}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Grade</td><td style="padding:8px;">${grade || "Not specified"}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Subjects</td><td style="padding:8px;">${subjects.join(", ")}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Registered</td><td style="padding:8px;">${new Date().toISOString()}</td></tr>
           </table>
