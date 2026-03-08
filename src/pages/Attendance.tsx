@@ -36,6 +36,10 @@ interface RegisteredStudent {
 }
 
 const Attendance = () => {
+  const [adminVerified, setAdminVerified] = useState(false);
+  const [adminCode, setAdminCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [adminError, setAdminError] = useState("");
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeSubject, setActiveSubject] = useState<string>("");
