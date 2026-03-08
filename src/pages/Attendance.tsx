@@ -12,9 +12,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   CheckCircle2, XCircle, ScanLine, Upload, RefreshCw,
-  Camera, List, QrCode, BookOpen, LogOut, ShieldCheck,
+  Camera, List, QrCode, BookOpen, LogOut, ShieldCheck, Lock,
 } from "lucide-react";
 
 type ScanStatus = "idle" | "success" | "error";
