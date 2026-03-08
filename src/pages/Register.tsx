@@ -39,6 +39,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectedGrade, setSelectedGrade] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
