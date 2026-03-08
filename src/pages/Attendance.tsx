@@ -501,6 +501,8 @@ const Attendance = () => {
             </Tabs>
           </>
         )}
+          </>
+        )}
       </main>
 
       <Footer />
