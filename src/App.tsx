@@ -8,6 +8,7 @@ import Subjects from "./pages/Subjects";
 import Results from "./pages/Results";
 import Register from "./pages/Register";
 import Attendance from "./pages/Attendance";
+import MyQR from "./pages/MyQR";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import DarukAiWidget from "./components/DarukAiWidget";
