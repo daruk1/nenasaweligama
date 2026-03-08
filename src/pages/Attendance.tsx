@@ -217,6 +217,24 @@ const Attendance = () => {
     navigate("/");
   };
 
+  const handleAdminVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setVerifying(true);
+    setAdminError("");
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-admin", {
+        body: { code: adminCode },
+      });
+      if (error || !data?.valid) {
+        setAdminError("Invalid admin code. Access denied.");
+      } else {
+        setAdminVerified(true);
+      }
+    } catch {
+      setAdminError("Verification failed. Try again.");
+    }
+    setVerifying(false);
+  };
 
   // Build attendance status list: who arrived, who didn't
   const arrivedIds = new Set(records.map((r) => r.student_id));
