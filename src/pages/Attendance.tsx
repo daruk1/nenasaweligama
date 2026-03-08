@@ -457,6 +457,7 @@ const Attendance = () => {
             )}
           </>
         )}
+      </main>
 
       <Footer />
     </div>
