@@ -49,7 +49,7 @@ Your role:
           model: "google/gemma-3-12b-it:free",
             messages: [
               { role: "user", content: `[System Instructions - Follow these carefully]\n${systemPrompt}` },
-              { role: "model", content: "Understood! I'm Nenasa AI Tutor, ready to help. How can I assist you today? 😊" },
+              { role: "assistant", content: "Understood! I'm Nenasa AI Tutor, ready to help. How can I assist you today? 😊" },
               ...messages,
             ],
           stream: true,
