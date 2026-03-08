@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, phone, subjects } = await req.json();
+    const { name, email, phone, subjects, grade } = await req.json();
 
     if (!name || !email || !phone || !subjects || subjects.length === 0) {
       return new Response(
