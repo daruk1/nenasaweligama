@@ -1,0 +1,1 @@
+ALTER TABLE public.registrations ADD COLUMN grade text DEFAULT NULL;

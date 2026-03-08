@@ -16,6 +16,7 @@ import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
 
 const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
+const grades = ["Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11"] as const;
 
 const classes = [
   {
@@ -38,10 +39,11 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectedGrade, setSelectedGrade] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [registrationData, setRegistrationData] = useState<{ id: string; name: string; subjects: string[] } | null>(null);
+  const [registrationData, setRegistrationData] = useState<{ id: string; name: string; subjects: string[]; grade: string } | null>(null);
   const [user, setUser] = useState<any>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
@@ -102,6 +104,10 @@ const Register = () => {
       toast.error("Please fill in all fields.");
       return;
     }
+    if (!selectedGrade) {
+      toast.error("Please select your grade.");
+      return;
+    }
     if (selected.length === 0 && selectedSubjects.length === 0) {
       toast.error("Please select at least one class or subject.");
       return;
@@ -115,13 +121,14 @@ const Register = () => {
     setIsSubmitting(true);
     try {
       const { error, data: responseData } = await supabase.functions.invoke("send-registration-email", {
-        body: { name, email, phone, subjects: allSelections },
+        body: { name, email, phone, subjects: allSelections, grade: selectedGrade },
       });
       if (error) throw error;
-      setRegistrationData({ id: responseData.registrationId, name, subjects: allSelections });
+      setRegistrationData({ id: responseData.registrationId, name, subjects: allSelections, grade: selectedGrade });
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
+      setSelectedGrade("");
       setSelectedSubjects([]);
     } catch (err) {
       console.error("Registration error:", err);
@@ -179,7 +186,9 @@ const Register = () => {
     const qrData = JSON.stringify({
       name: registrationData.name,
       id: registrationData.id,
+      grade: registrationData.grade,
       subjects: registrationData.subjects,
+      type: "payment",
     });
 
     return (
@@ -204,6 +213,9 @@ const Register = () => {
               <div ref={qrRef} className="flex flex-col items-center gap-3 rounded-2xl border-2 border-accent/20 bg-card p-6 shadow-md">
                 <QRCodeSVG value={qrData} size={200} level="H" />
                 <p className="text-lg font-bold text-foreground">{registrationData.name}</p>
+                <span className="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+                  {registrationData.grade}
+                </span>
                 <div className="flex flex-wrap justify-center gap-1.5">
                   {registrationData.subjects.map((s) => (
                     <span key={s} className="rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
@@ -212,6 +224,10 @@ const Register = () => {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">ID: {registrationData.id.slice(0, 8)}</p>
+                <div className="mt-2 rounded-lg bg-muted px-4 py-2 text-center">
+                  <p className="text-xs font-semibold text-foreground">📋 Monthly Payment Notice</p>
+                  <p className="text-xs text-muted-foreground">Show this QR to verify payment status</p>
+                </div>
               </div>
 
               {/* Copyable ID */}
@@ -293,6 +309,33 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input id="phone" placeholder="07X XXX XXXX" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+
+              {/* Grade selection */}
+              <div className="space-y-3">
+                <Label>Select Your Grade</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {grades.map((grade) => (
+                    <label
+                      key={grade}
+                      className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 p-3 transition-all ${
+                        selectedGrade === grade
+                          ? "border-accent bg-accent/10 shadow-md shadow-accent/10"
+                          : "border-border hover:border-accent/40"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="grade"
+                        value={grade}
+                        checked={selectedGrade === grade}
+                        onChange={() => setSelectedGrade(grade)}
+                        className="sr-only"
+                      />
+                      <span className="text-sm font-semibold">{grade}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               {/* Class selection with promo cards */}

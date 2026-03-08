@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, phone, subjects } = await req.json();
+    const { name, email, phone, subjects, grade } = await req.json();
 
     if (!name || !email || !phone || !subjects || subjects.length === 0) {
       return new Response(
@@ -31,7 +31,7 @@ serve(async (req) => {
     // Store registration in database
     const { data: regData, error: dbError } = await supabase
       .from("registrations")
-      .insert({ name, email, phone, subjects })
+      .insert({ name, email, phone, subjects, grade: grade || null })
       .select("id")
       .single();
 
@@ -55,13 +55,14 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Nenasa Education <onboarding@resend.dev>",
         to: [TEACHER_EMAIL],
-        subject: `New Registration: ${name} - ${subjects.join(", ")}`,
+        subject: `New Registration: ${name} - ${grade || "N/A"} - ${subjects.join(", ")}`,
         html: `
           <h2>New Student Registration - Nenasa Education</h2>
           <table style="border-collapse:collapse;width:100%;max-width:500px;">
             <tr><td style="padding:8px;font-weight:bold;">Name</td><td style="padding:8px;">${name}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${email}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Phone</td><td style="padding:8px;">${phone}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Grade</td><td style="padding:8px;">${grade || "Not specified"}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Subjects</td><td style="padding:8px;">${subjects.join(", ")}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Registered</td><td style="padding:8px;">${new Date().toISOString()}</td></tr>
           </table>

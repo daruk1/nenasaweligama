@@ -14,6 +14,7 @@ interface Registration {
   name: string;
   email: string;
   subjects: string[];
+  grade: string | null;
   created_at: string;
 }
 
@@ -51,7 +52,7 @@ const MyQR = () => {
   }, [user]);
 
   const handleDownloadQR = (reg: Registration) => {
-    const qrData = JSON.stringify({ name: reg.name, id: reg.id });
+    const qrData = JSON.stringify({ name: reg.name, id: reg.id, grade: reg.grade, subjects: reg.subjects, type: "payment" });
     const svg = document.getElementById(`qr-${reg.id}`)?.querySelector("svg");
     if (!svg) return;
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -113,7 +114,7 @@ const MyQR = () => {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
             {registrations.map((reg) => {
-              const qrData = JSON.stringify({ name: reg.name, id: reg.id });
+              const qrData = JSON.stringify({ name: reg.name, id: reg.id, grade: reg.grade, subjects: reg.subjects, type: "payment" });
               return (
                 <Card key={reg.id} className="border-0 shadow-[var(--card-shadow)]">
                   <CardContent className="flex flex-col items-center gap-4 py-8">
@@ -122,6 +123,11 @@ const MyQR = () => {
                     </div>
                     <div className="text-center">
                       <p className="text-lg font-bold text-foreground">{reg.name}</p>
+                      {reg.grade && (
+                        <span className="inline-block rounded-full bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+                          {reg.grade}
+                        </span>
+                      )}
                       <p className="text-xs text-muted-foreground">ID: {reg.id.slice(0, 8)}</p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-1">

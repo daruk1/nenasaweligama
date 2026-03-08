@@ -1,0 +1,1 @@
+CREATE POLICY "Users can read own registrations" ON public.registrations FOR SELECT USING (true);
