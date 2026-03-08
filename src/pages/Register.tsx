@@ -118,7 +118,7 @@ const Register = () => {
         body: { name, email, phone, subjects: allSelections },
       });
       if (error) throw error;
-      setRegistrationData({ id: responseData.registrationId, name });
+      setRegistrationData({ id: responseData.registrationId, name, subjects: allSelections });
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
