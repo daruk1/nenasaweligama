@@ -261,42 +261,6 @@ const Attendance = () => {
       <Navbar />
 
       <main className="container mx-auto flex flex-1 flex-col items-center gap-6 px-4 py-10">
-        {!adminVerified ? (
-          /* Admin Code Gate */
-          <Card className="w-full max-w-md border-0 shadow-lg">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
-                <Lock className="h-7 w-7 text-accent" />
-              </div>
-              <CardTitle className="font-display text-2xl">Admin Access</CardTitle>
-              <CardDescription>Enter the admin code to access the attendance panel</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleAdminVerify} className="space-y-4">
-                <Input
-                  type="password"
-                  placeholder="Enter admin code"
-                  value={adminCode}
-                  onChange={(e) => setAdminCode(e.target.value)}
-                  required
-                />
-                {adminError && (
-                  <p className="text-sm text-destructive text-center">{adminError}</p>
-                )}
-                <Button
-                  type="submit"
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold gap-2"
-                  disabled={verifying}
-                >
-                  <ShieldCheck className="h-4 w-4" />
-                  {verifying ? "Verifying..." : "Enter Admin Panel"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Admin Panel Content */
-          <>
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-6 w-6 text-accent" />
           <h1 className="font-display text-3xl font-bold text-foreground">
@@ -312,7 +276,7 @@ const Attendance = () => {
           </div>
         ) : (
           <>
-            {/* Subject Selector - only registered subjects */}
+            {/* Subject Selector */}
             <div className="flex flex-wrap justify-center gap-3">
               {availableSubjects.map((sub) => (
                 <Button
@@ -405,7 +369,7 @@ const Attendance = () => {
                 </div>
               </TabsContent>
 
-              {/* Records Tab - Shows arrived & not arrived */}
+              {/* Records Tab */}
               <TabsContent value="records" className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <p className="text-muted-foreground">
@@ -465,20 +429,12 @@ const Attendance = () => {
                 </div>
 
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>
-                    ✅ {attendanceList.filter((s) => s.arrived).length} arrived
-                  </span>
-                  <span>
-                    ❌ {attendanceList.filter((s) => !s.arrived).length} not arrived
-                  </span>
-                  <span>
-                    Total: {subjectStudents.length} student{subjectStudents.length !== 1 ? "s" : ""}
-                  </span>
+                  <span>✅ {attendanceList.filter((s) => s.arrived).length} arrived</span>
+                  <span>❌ {attendanceList.filter((s) => !s.arrived).length} not arrived</span>
+                  <span>Total: {subjectStudents.length} student{subjectStudents.length !== 1 ? "s" : ""}</span>
                 </div>
               </TabsContent>
             </Tabs>
-          </>
-        )}
           </>
         )}
       </main>
