@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   CheckCircle2, XCircle, ScanLine, Upload, RefreshCw,
   Camera, List, QrCode, BookOpen, LogOut, ShieldCheck, Lock,
