@@ -29,9 +29,11 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Store registration in database
-    const { error: dbError } = await supabase
+    const { data: regData, error: dbError } = await supabase
       .from("registrations")
-      .insert({ name, email, phone, subjects });
+      .insert({ name, email, phone, subjects })
+      .select("id")
+      .single();
 
     if (dbError) {
       console.error("DB error:", dbError);
@@ -77,7 +79,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Registration submitted successfully" }),
+      JSON.stringify({ success: true, message: "Registration submitted successfully", registrationId: regData.id }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { UserPlus, Clock, CheckCircle, Mail, LogOut } from "lucide-react";
+import { UserPlus, Clock, CheckCircle, Mail, LogOut, Download, QrCode } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { QRCodeSVG } from "qrcode.react";
 import FadeIn from "@/components/FadeIn";
 import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
@@ -40,7 +41,9 @@ const Register = () => {
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [registrationData, setRegistrationData] = useState<{ id: string; name: string } | null>(null);
   const [user, setUser] = useState<any>(null);
+  const qrRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -111,10 +114,11 @@ const Register = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.functions.invoke("send-registration-email", {
+      const { error, data: responseData } = await supabase.functions.invoke("send-registration-email", {
         body: { name, email, phone, subjects: allSelections },
       });
       if (error) throw error;
+      setRegistrationData({ id: responseData.registrationId, name });
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
@@ -135,7 +139,39 @@ const Register = () => {
     );
   }
 
-  if (isSubmitted) {
+  const handleDownloadQR = () => {
+    if (!qrRef.current || !registrationData) return;
+    const svg = qrRef.current.querySelector("svg");
+    if (!svg) return;
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    canvas.width = 600;
+    canvas.height = 700;
+    const ctx = canvas.getContext("2d")!;
+    const img = new Image();
+    img.onload = () => {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 600, 700);
+      ctx.drawImage(img, 50, 30, 500, 500);
+      ctx.fillStyle = "#000000";
+      ctx.font = "bold 24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(registrationData.name, 300, 580);
+      ctx.font = "16px sans-serif";
+      ctx.fillStyle = "#666666";
+      ctx.fillText("Nenasa Education - Attendance QR", 300, 620);
+      ctx.fillText(`ID: ${registrationData.id.slice(0, 8)}`, 300, 650);
+      const link = document.createElement("a");
+      link.download = `qr-${registrationData.name.replace(/\s+/g, "-")}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    };
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
+  };
+
+  if (isSubmitted && registrationData) {
+    const qrData = JSON.stringify({ name: registrationData.name, id: registrationData.id });
+
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -150,27 +186,50 @@ const Register = () => {
                   Registration Submitted!
                 </h2>
                 <p className="mt-2 text-muted-foreground">
-                  Your registration has been sent to our teacher successfully.
+                  Your QR code has been generated automatically.
                 </p>
               </div>
+
+              {/* Auto-generated QR Code */}
+              <div ref={qrRef} className="flex flex-col items-center gap-3 rounded-2xl border-2 border-accent/20 bg-card p-6 shadow-md">
+                <QRCodeSVG value={qrData} size={200} level="H" />
+                <p className="text-lg font-bold text-foreground">{registrationData.name}</p>
+                <p className="text-xs text-muted-foreground">ID: {registrationData.id.slice(0, 8)}</p>
+              </div>
+
+              <Button
+                onClick={handleDownloadQR}
+                className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+                size="lg"
+              >
+                <Download className="h-4 w-4" />
+                Download QR Code
+              </Button>
+
               <div className="flex items-center gap-3 rounded-xl bg-accent/10 px-6 py-4">
                 <Clock className="h-8 w-8 text-accent" />
                 <div className="text-left">
                   <p className="font-semibold text-foreground">We'll reply within 24 hours</p>
-                  <p className="text-sm text-muted-foreground">Please check your email for confirmation</p>
+                  <p className="text-sm text-muted-foreground">Show this QR to teacher for attendance</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>Check your inbox and spam folder</span>
+
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/my-qr")}
+                  className="flex-1 gap-2"
+                >
+                  <QrCode className="h-4 w-4" />
+                  View My QR Codes
+                </Button>
+                <Button
+                  onClick={() => { setIsSubmitted(false); setRegistrationData(null); }}
+                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+                >
+                  Register Another Student
+                </Button>
               </div>
-              <Button
-                onClick={() => setIsSubmitted(false)}
-                className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
-                size="lg"
-              >
-                Register Another Student
-              </Button>
             </CardContent>
           </Card>
         </main>

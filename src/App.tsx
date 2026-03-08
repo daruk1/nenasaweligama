@@ -8,6 +8,7 @@ import Subjects from "./pages/Subjects";
 import Results from "./pages/Results";
 import Register from "./pages/Register";
 import Attendance from "./pages/Attendance";
+import MyQR from "./pages/MyQR";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import DarukAiWidget from "./components/DarukAiWidget";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/register" element={<Register />} />
           <Route path="/attendance" element={<Attendance />} />
+          <Route path="/my-qr" element={<MyQR />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <DarukAiWidget />
