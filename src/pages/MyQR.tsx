@@ -14,6 +14,7 @@ interface Registration {
   name: string;
   email: string;
   subjects: string[];
+  grade: string | null;
   created_at: string;
 }
 
