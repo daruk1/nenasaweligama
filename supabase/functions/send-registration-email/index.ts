@@ -29,9 +29,11 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Store registration in database
-    const { error: dbError } = await supabase
+    const { data: regData, error: dbError } = await supabase
       .from("registrations")
-      .insert({ name, email, phone, subjects });
+      .insert({ name, email, phone, subjects })
+      .select("id")
+      .single();
 
     if (dbError) {
       console.error("DB error:", dbError);
