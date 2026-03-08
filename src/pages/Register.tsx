@@ -311,6 +311,33 @@ const Register = () => {
                 <Input id="phone" placeholder="07X XXX XXXX" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
 
+              {/* Grade selection */}
+              <div className="space-y-3">
+                <Label>Select Your Grade</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {grades.map((grade) => (
+                    <label
+                      key={grade}
+                      className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 p-3 transition-all ${
+                        selectedGrade === grade
+                          ? "border-accent bg-accent/10 shadow-md shadow-accent/10"
+                          : "border-border hover:border-accent/40"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="grade"
+                        value={grade}
+                        checked={selectedGrade === grade}
+                        onChange={() => setSelectedGrade(grade)}
+                        className="sr-only"
+                      />
+                      <span className="text-sm font-semibold">{grade}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {/* Class selection with promo cards */}
               <div className="space-y-3">
                 <Label>Select Classes</Label>
