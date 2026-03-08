@@ -213,6 +213,9 @@ const Register = () => {
               <div ref={qrRef} className="flex flex-col items-center gap-3 rounded-2xl border-2 border-accent/20 bg-card p-6 shadow-md">
                 <QRCodeSVG value={qrData} size={200} level="H" />
                 <p className="text-lg font-bold text-foreground">{registrationData.name}</p>
+                <span className="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+                  {registrationData.grade}
+                </span>
                 <div className="flex flex-wrap justify-center gap-1.5">
                   {registrationData.subjects.map((s) => (
                     <span key={s} className="rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
@@ -221,6 +224,10 @@ const Register = () => {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">ID: {registrationData.id.slice(0, 8)}</p>
+                <div className="mt-2 rounded-lg bg-muted px-4 py-2 text-center">
+                  <p className="text-xs font-semibold text-foreground">📋 Monthly Payment Notice</p>
+                  <p className="text-xs text-muted-foreground">Show this QR to verify payment status</p>
+                </div>
               </div>
 
               {/* Copyable ID */}
