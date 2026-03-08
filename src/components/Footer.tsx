@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import nenasaLogo from "@/assets/nenasa-logo.jpeg";
-import { Phone, MapPin, Mail } from "lucide-react";
+import { Phone, MapPin, MessageCircle } from "lucide-react";
 
 const Footer = () => (
   <footer className="border-t bg-primary py-12 text-primary-foreground">
