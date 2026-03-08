@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   CheckCircle2, XCircle, ScanLine, Upload, RefreshCw,
-  Camera, List, QrCode, BookOpen, LogOut, ShieldCheck, Lock,
+  Camera, List, QrCode, BookOpen, LogOut, ShieldCheck,
 } from "lucide-react";
 
 type ScanStatus = "idle" | "success" | "error";
