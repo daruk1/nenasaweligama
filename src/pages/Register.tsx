@@ -104,6 +104,10 @@ const Register = () => {
       toast.error("Please fill in all fields.");
       return;
     }
+    if (!selectedGrade) {
+      toast.error("Please select your grade.");
+      return;
+    }
     if (selected.length === 0 && selectedSubjects.length === 0) {
       toast.error("Please select at least one class or subject.");
       return;
