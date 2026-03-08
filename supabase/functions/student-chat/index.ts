@@ -38,15 +38,15 @@ Your role:
   4. 💡 Tips to remember`;
 
     const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "meta-llama/llama-3.1-8b-instruct:free",
           messages: [
             { role: "system", content: systemPrompt },
             ...messages,
