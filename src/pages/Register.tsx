@@ -128,6 +128,7 @@ const Register = () => {
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
+      setSelectedGrade("");
       setSelectedSubjects([]);
     } catch (err) {
       console.error("Registration error:", err);
