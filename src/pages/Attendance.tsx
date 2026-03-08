@@ -13,10 +13,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   CheckCircle2, XCircle, ScanLine, Upload, RefreshCw,
-  Camera, List, QrCode, BookOpen, LogOut, ShieldCheck, Lock,
+  Camera, List, QrCode, BookOpen, LogOut, ShieldCheck,
 } from "lucide-react";
 
 type ScanStatus = "idle" | "success" | "error";
@@ -38,10 +37,6 @@ interface RegisteredStudent {
 }
 
 const Attendance = () => {
-  const [adminVerified, setAdminVerified] = useState(false);
-  const [adminCode, setAdminCode] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [adminError, setAdminError] = useState("");
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeSubject, setActiveSubject] = useState<string>("");
@@ -217,24 +212,6 @@ const Attendance = () => {
     navigate("/");
   };
 
-  const handleAdminVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setVerifying(true);
-    setAdminError("");
-    try {
-      const { data, error } = await supabase.functions.invoke("verify-admin", {
-        body: { code: adminCode },
-      });
-      if (error || !data?.valid) {
-        setAdminError("Invalid admin code. Access denied.");
-      } else {
-        setAdminVerified(true);
-      }
-    } catch {
-      setAdminError("Verification failed. Try again.");
-    }
-    setVerifying(false);
-  };
 
   // Build attendance status list: who arrived, who didn't
   const arrivedIds = new Set(records.map((r) => r.student_id));
@@ -283,42 +260,6 @@ const Attendance = () => {
       <Navbar />
 
       <main className="container mx-auto flex flex-1 flex-col items-center gap-6 px-4 py-10">
-        {!adminVerified ? (
-          /* Admin Code Gate */
-          <Card className="w-full max-w-md border-0 shadow-lg">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
-                <Lock className="h-7 w-7 text-accent" />
-              </div>
-              <CardTitle className="font-display text-2xl">Admin Access</CardTitle>
-              <CardDescription>Enter the admin code to access the attendance panel</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleAdminVerify} className="space-y-4">
-                <Input
-                  type="password"
-                  placeholder="Enter admin code"
-                  value={adminCode}
-                  onChange={(e) => setAdminCode(e.target.value)}
-                  required
-                />
-                {adminError && (
-                  <p className="text-sm text-destructive text-center">{adminError}</p>
-                )}
-                <Button
-                  type="submit"
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold gap-2"
-                  disabled={verifying}
-                >
-                  <ShieldCheck className="h-4 w-4" />
-                  {verifying ? "Verifying..." : "Enter Admin Panel"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Admin Panel Content */
-          <>
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-6 w-6 text-accent" />
           <h1 className="font-display text-3xl font-bold text-foreground">
@@ -334,7 +275,7 @@ const Attendance = () => {
           </div>
         ) : (
           <>
-            {/* Subject Selector - only registered subjects */}
+            {/* Subject Selector */}
             <div className="flex flex-wrap justify-center gap-3">
               {availableSubjects.map((sub) => (
                 <Button
@@ -427,7 +368,7 @@ const Attendance = () => {
                 </div>
               </TabsContent>
 
-              {/* Records Tab - Shows arrived & not arrived */}
+              {/* Records Tab */}
               <TabsContent value="records" className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <p className="text-muted-foreground">
@@ -487,20 +428,12 @@ const Attendance = () => {
                 </div>
 
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>
-                    ✅ {attendanceList.filter((s) => s.arrived).length} arrived
-                  </span>
-                  <span>
-                    ❌ {attendanceList.filter((s) => !s.arrived).length} not arrived
-                  </span>
-                  <span>
-                    Total: {subjectStudents.length} student{subjectStudents.length !== 1 ? "s" : ""}
-                  </span>
+                  <span>✅ {attendanceList.filter((s) => s.arrived).length} arrived</span>
+                  <span>❌ {attendanceList.filter((s) => !s.arrived).length} not arrived</span>
+                  <span>Total: {subjectStudents.length} student{subjectStudents.length !== 1 ? "s" : ""}</span>
                 </div>
               </TabsContent>
             </Tabs>
-          </>
-        )}
           </>
         )}
       </main>
