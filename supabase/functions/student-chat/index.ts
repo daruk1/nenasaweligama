@@ -58,7 +58,7 @@ Your role:
     });
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-12b-it:streamGenerateContent?alt=sse&key=${GOOGLE_AI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${GOOGLE_AI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
