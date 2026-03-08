@@ -10,10 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Bot, Send, X, Sparkles, GraduationCap, BookOpen } from "lucide-react";
+import { Bot, Send, X, Sparkles, GraduationCap, BookOpen, ImagePlus, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type MessageContent =
+  | string
+  | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
+
+type Msg = { role: "user" | "assistant"; content: MessageContent; imagePreview?: string };
 
 const GRADES = [
   "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11",
@@ -25,6 +29,23 @@ const SUBJECTS = [
   "History", "Geography", "ICT", "Commerce", "Buddhism",
   "Physics", "Chemistry", "Biology", "Combined Maths",
 ];
+
+const GUIDED_TOPICS: Record<string, string[]> = {
+  Mathematics: ["Algebra basics", "Fractions & decimals", "Geometry shapes", "Equations solving"],
+  Science: ["Human body systems", "Forces & motion", "Chemical reactions", "Ecosystems"],
+  English: ["Grammar rules", "Essay writing tips", "Reading comprehension", "Vocabulary building"],
+  Physics: ["Newton's laws", "Electricity & circuits", "Waves & optics", "Thermodynamics"],
+  Chemistry: ["Periodic table", "Chemical bonding", "Acids & bases", "Organic chemistry"],
+  Biology: ["Cell structure", "Photosynthesis", "Genetics basics", "Human anatomy"],
+  "Combined Maths": ["Differentiation", "Integration", "Trigonometry", "Matrices"],
+  History: ["Ancient civilizations", "Sri Lankan history", "World wars", "Independence movements"],
+  Geography: ["Map reading", "Climate zones", "Natural disasters", "Sri Lankan geography"],
+  ICT: ["Computer basics", "Programming concepts", "Internet safety", "Database basics"],
+  Commerce: ["Business types", "Accounting basics", "Marketing concepts", "Banking & finance"],
+  Buddhism: ["Noble truths", "Eightfold path", "Buddhist history", "Meditation concepts"],
+  Sinhala: ["Grammar rules", "Literature analysis", "Essay writing", "Poetry appreciation"],
+  Tamil: ["Grammar rules", "Literature analysis", "Essay writing", "Poetry appreciation"],
+};
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/student-chat`;
 
@@ -41,13 +62,19 @@ async function streamChat({
   onDelta: (t: string) => void;
   onDone: () => void;
 }) {
+  // Convert messages to API format (strip imagePreview)
+  const apiMessages = messages.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+
   const resp = await fetch(CHAT_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages, grade, subject }),
+    body: JSON.stringify({ messages: apiMessages, grade, subject }),
   });
 
   if (!resp.ok) {
@@ -95,6 +122,14 @@ const getGreeting = () => {
   return "Good Night";
 };
 
+const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
 const DarukAiWidget = () => {
   const [open, setOpen] = useState(false);
   const [grade, setGrade] = useState("");
@@ -103,7 +138,10 @@ const DarukAiWidget = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [started, setStarted] = useState(false);
+  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [showGuided, setShowGuided] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -117,15 +155,52 @@ const DarukAiWidget = () => {
     setStarted(true);
     setMessages([{
       role: "assistant",
-      content: `👋 ${getGreeting()}! I'm **Daruk AI**.\n\nYou're studying **${subject}** in **${grade}**. Ask me anything!\n\n💡 Homework help, concept explanations, exam tips — I'm here for you.`,
+      content: `👋 ${getGreeting()}! I'm **Daruk AI**.\n\nYou're studying **${subject}** in **${grade}**. Ask me anything!\n\n📸 You can **attach photos** of homework or questions!\n\n💡 Try the **Guided Learning** button for structured lessons.`,
     }]);
+  };
+
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+    const base64 = await fileToBase64(file);
+    setAttachedImage(base64);
+    e.target.value = "";
+  };
+
+  const handleGuidedTopic = (topic: string) => {
+    setShowGuided(false);
+    setInput(`Teach me about "${topic}" step by step. Start from the basics and build up. Include examples and practice questions.`);
   };
 
   const send = async () => {
     const text = input.trim();
-    if (!text || isLoading) return;
-    const userMsg: Msg = { role: "user", content: text };
+    if ((!text && !attachedImage) || isLoading) return;
+
+    let userContent: MessageContent;
+    let imagePreview: string | undefined;
+
+    if (attachedImage) {
+      const parts: Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }> = [];
+      if (text) parts.push({ type: "text", text });
+      else parts.push({ type: "text", text: "Please look at this image and help me understand/solve it." });
+      parts.push({ type: "image_url", image_url: { url: attachedImage } });
+      userContent = parts;
+      imagePreview = attachedImage;
+    } else {
+      userContent = text;
+    }
+
+    const userMsg: Msg = { role: "user", content: userContent, imagePreview };
     setInput("");
+    setAttachedImage(null);
     setMessages((p) => [...p, userMsg]);
     setIsLoading(true);
 
@@ -134,7 +209,7 @@ const DarukAiWidget = () => {
       assistant += chunk;
       setMessages((p) => {
         const last = p[p.length - 1];
-        if (last?.role === "assistant" && p.length > 1 && p[p.length - 2]?.content === text) {
+        if (last?.role === "assistant" && p.length > 1) {
           return p.map((m, i) => (i === p.length - 1 ? { ...m, content: assistant } : m));
         }
         return [...p, { role: "assistant", content: assistant }];
@@ -155,9 +230,16 @@ const DarukAiWidget = () => {
     }
   };
 
+  const getDisplayText = (msg: Msg): string => {
+    if (typeof msg.content === "string") return msg.content;
+    const textPart = msg.content.find((p) => p.type === "text");
+    return textPart ? (textPart as { type: "text"; text: string }).text : "";
+  };
+
+  const guidedTopics = GUIDED_TOPICS[subject] || ["Key concepts", "Practice problems", "Exam preparation", "Summary notes"];
+
   return (
     <>
-      {/* Floating button */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
@@ -168,7 +250,6 @@ const DarukAiWidget = () => {
         </button>
       )}
 
-      {/* Chat panel */}
       {open && (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[360px] h-[520px] rounded-2xl border bg-card shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
           {/* Header */}
@@ -186,7 +267,7 @@ const DarukAiWidget = () => {
                   variant="ghost"
                   size="sm"
                   className="h-7 text-accent-foreground hover:bg-accent-foreground/10 text-xs"
-                  onClick={() => { setStarted(false); setMessages([]); }}
+                  onClick={() => { setStarted(false); setMessages([]); setAttachedImage(null); setShowGuided(false); }}
                 >
                   Reset
                 </Button>
@@ -201,7 +282,6 @@ const DarukAiWidget = () => {
           </div>
 
           {!started ? (
-            /* Setup view */
             <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-5">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/20">
                 <Sparkles className="h-7 w-7 text-accent" />
@@ -253,11 +333,20 @@ const DarukAiWidget = () => {
                             : "bg-muted text-foreground rounded-bl-sm"
                         }`}
                       >
+                        {m.imagePreview && (
+                          <img
+                            src={m.imagePreview}
+                            alt="Attached"
+                            className="rounded-lg mb-1.5 max-h-32 w-auto object-cover"
+                          />
+                        )}
                         {m.role === "assistant" ? (
                           <div className="prose prose-xs dark:prose-invert max-w-none [&_p]:my-1 [&_li]:my-0.5 [&_ul]:my-1">
-                            <ReactMarkdown>{m.content}</ReactMarkdown>
+                            <ReactMarkdown>{getDisplayText(m)}</ReactMarkdown>
                           </div>
-                        ) : m.content}
+                        ) : (
+                          getDisplayText(m)
+                        )}
                       </div>
                     </div>
                   ))}
@@ -275,9 +364,63 @@ const DarukAiWidget = () => {
                 </div>
               </ScrollArea>
 
+              {/* Guided Learning Panel */}
+              {showGuided && (
+                <div className="border-t px-3 py-2 bg-muted/50 space-y-1.5">
+                  <p className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                    <Lightbulb className="h-3 w-3" /> Guided Learning — pick a topic:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {guidedTopics.map((topic) => (
+                      <button
+                        key={topic}
+                        onClick={() => handleGuidedTopic(topic)}
+                        className="text-[10px] px-2 py-1 rounded-full bg-accent/20 text-accent hover:bg-accent/30 transition-colors border border-accent/20"
+                      >
+                        {topic}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Image Preview */}
+              {attachedImage && (
+                <div className="border-t px-3 py-2 flex items-center gap-2">
+                  <img src={attachedImage} alt="Preview" className="h-10 w-10 rounded object-cover border" />
+                  <span className="text-[10px] text-muted-foreground flex-1">Image attached</span>
+                  <button onClick={() => setAttachedImage(null)} className="text-muted-foreground hover:text-foreground">
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+
               {/* Input */}
               <div className="border-t p-3">
-                <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
+                <input type="file" ref={fileRef} accept="image/*" className="hidden" onChange={handleImageSelect} />
+                <form className="flex gap-1.5" onSubmit={(e) => { e.preventDefault(); send(); }}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 shrink-0"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={isLoading}
+                    title="Attach image"
+                  >
+                    <ImagePlus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className={`h-9 w-9 shrink-0 ${showGuided ? "bg-accent/20" : ""}`}
+                    onClick={() => setShowGuided(!showGuided)}
+                    disabled={isLoading}
+                    title="Guided Learning"
+                  >
+                    <Lightbulb className="h-4 w-4" />
+                  </Button>
                   <Input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -285,7 +428,7 @@ const DarukAiWidget = () => {
                     disabled={isLoading}
                     className="flex-1 h-9 text-sm"
                   />
-                  <Button type="submit" disabled={isLoading || !input.trim()} size="icon" className="h-9 w-9">
+                  <Button type="submit" disabled={isLoading || (!input.trim() && !attachedImage)} size="icon" className="h-9 w-9">
                     <Send className="h-3.5 w-3.5" />
                   </Button>
                 </form>
