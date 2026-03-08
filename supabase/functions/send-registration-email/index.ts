@@ -31,7 +31,7 @@ serve(async (req) => {
     // Store registration in database
     const { data: regData, error: dbError } = await supabase
       .from("registrations")
-      .insert({ name, email, phone, subjects })
+      .insert({ name, email, phone, subjects, grade: grade || null })
       .select("id")
       .single();
 
