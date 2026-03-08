@@ -121,10 +121,10 @@ const Register = () => {
     setIsSubmitting(true);
     try {
       const { error, data: responseData } = await supabase.functions.invoke("send-registration-email", {
-        body: { name, email, phone, subjects: allSelections },
+        body: { name, email, phone, subjects: allSelections, grade: selectedGrade },
       });
       if (error) throw error;
-      setRegistrationData({ id: responseData.registrationId, name, subjects: allSelections });
+      setRegistrationData({ id: responseData.registrationId, name, subjects: allSelections, grade: selectedGrade });
       setIsSubmitted(true);
       setPhone("");
       setSelected([]);
