@@ -169,8 +169,18 @@ const Register = () => {
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
+  const handleCopyId = () => {
+    if (!registrationData) return;
+    navigator.clipboard.writeText(registrationData.id);
+    toast.success("ID copied to clipboard!");
+  };
+
   if (isSubmitted && registrationData) {
-    const qrData = JSON.stringify({ name: registrationData.name, id: registrationData.id });
+    const qrData = JSON.stringify({
+      name: registrationData.name,
+      id: registrationData.id,
+      subjects: registrationData.subjects,
+    });
 
     return (
       <div className="min-h-screen bg-background">
@@ -194,7 +204,22 @@ const Register = () => {
               <div ref={qrRef} className="flex flex-col items-center gap-3 rounded-2xl border-2 border-accent/20 bg-card p-6 shadow-md">
                 <QRCodeSVG value={qrData} size={200} level="H" />
                 <p className="text-lg font-bold text-foreground">{registrationData.name}</p>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {registrationData.subjects.map((s) => (
+                    <span key={s} className="rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
+                      {s}
+                    </span>
+                  ))}
+                </div>
                 <p className="text-xs text-muted-foreground">ID: {registrationData.id.slice(0, 8)}</p>
+              </div>
+
+              {/* Copyable ID */}
+              <div className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2">
+                <span className="text-sm font-mono text-foreground">{registrationData.id}</span>
+                <Button variant="ghost" size="icon" onClick={handleCopyId} className="h-7 w-7">
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
               </div>
 
               <Button
