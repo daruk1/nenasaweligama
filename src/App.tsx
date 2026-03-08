@@ -28,6 +28,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/register" element={<Register />} />
           <Route path="/attendance" element={<Attendance />} />
+          <Route path="/my-qr" element={<MyQR />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <DarukAiWidget />
