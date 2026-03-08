@@ -43,7 +43,7 @@ const Register = () => {
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [registrationData, setRegistrationData] = useState<{ id: string; name: string; subjects: string[] } | null>(null);
+  const [registrationData, setRegistrationData] = useState<{ id: string; name: string; subjects: string[]; grade: string } | null>(null);
   const [user, setUser] = useState<any>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
