@@ -46,16 +46,11 @@ Your role:
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemma-3-12b-it:free",
-          messages: messages.map((msg: { role: string; content: unknown }, i: number) => {
-            if (i === 0 && msg.role === "user") {
-              const content = typeof msg.content === "string"
-                ? `${systemPrompt}\n\nStudent's question: ${msg.content}`
-                : msg.content;
-              return { ...msg, content };
-            }
-            return msg;
-          }),
+          model: "meta-llama/llama-3.1-8b-instruct:free",
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages,
+          ],
           stream: true,
         }),
       }
