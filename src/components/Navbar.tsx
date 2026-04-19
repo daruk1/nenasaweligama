@@ -9,7 +9,7 @@ const navItems = [
   { label: "Subjects", path: "/subjects" },
   { label: "Check Results", path: "/results" },
   { label: "Register", path: "/auth" },
-  { label: "Attendance", path: "/attendance" },
+  
 ];
 
 const Navbar = () => {
