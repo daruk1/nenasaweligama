@@ -243,22 +243,29 @@ const DarukAiWidget = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent shadow-lg hover:scale-105 transition-transform"
+          className="group fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full liquid-glass-strong hover:scale-110 active:scale-95 transition-all duration-300"
           aria-label="Open Daruk AI"
         >
-          <Bot className="h-7 w-7 text-accent-foreground" />
+          <span className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/40 via-accent/10 to-primary/30 opacity-80 group-hover:opacity-100 transition-opacity" />
+          <span className="absolute inset-1 rounded-full bg-gradient-to-tr from-white/20 to-transparent" />
+          <Bot className="relative h-7 w-7 text-accent-foreground drop-shadow-[0_2px_4px_hsl(var(--primary)/0.4)]" />
+          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-success ring-2 ring-background animate-pulse" />
         </button>
       )}
 
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[360px] h-[520px] rounded-2xl border bg-card shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[360px] h-[540px] rounded-3xl liquid-glass-strong overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+          {/* Glossy top highlight */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/25 to-transparent" />
           {/* Header */}
-          <div className="flex items-center justify-between bg-accent px-4 py-3">
+          <div className="relative flex items-center justify-between px-4 py-3 bg-gradient-to-r from-accent/90 to-accent/70 backdrop-blur-xl border-b border-white/10">
             <div className="flex items-center gap-2">
-              <Bot className="h-5 w-5 text-accent-foreground" />
-              <span className="font-bold text-accent-foreground">Daruk AI</span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <Bot className="h-4 w-4 text-accent-foreground" />
+              </div>
+              <span className="font-bold text-accent-foreground tracking-tight">Daruk AI</span>
               {started && (
-                <span className="text-[10px] text-accent-foreground/70">• {grade} • {subject}</span>
+                <span className="text-[10px] text-accent-foreground/80 font-medium">• {grade} • {subject}</span>
               )}
             </div>
             <div className="flex items-center gap-1">
@@ -266,7 +273,7 @@ const DarukAiWidget = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 text-accent-foreground hover:bg-accent-foreground/10 text-xs"
+                  className="h-7 text-accent-foreground hover:bg-white/20 text-xs rounded-full"
                   onClick={() => { setStarted(false); setMessages([]); setAttachedImage(null); setShowGuided(false); }}
                 >
                   Reset
@@ -274,7 +281,7 @@ const DarukAiWidget = () => {
               )}
               <button
                 onClick={() => setOpen(false)}
-                className="text-accent-foreground hover:bg-accent-foreground/10 rounded p-1"
+                className="text-accent-foreground hover:bg-white/20 rounded-full p-1.5 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -327,10 +334,10 @@ const DarukAiWidget = () => {
                   {messages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                       <div
-                        className={`max-w-[80%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
+                        className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed backdrop-blur-md border ${
                           m.role === "user"
-                            ? "bg-primary text-primary-foreground rounded-br-sm"
-                            : "bg-muted text-foreground rounded-bl-sm"
+                            ? "bg-primary/85 text-primary-foreground rounded-br-md border-white/10 shadow-lg shadow-primary/20"
+                            : "bg-card/70 text-foreground rounded-bl-md border-white/20 shadow-sm"
                         }`}
                       >
                         {m.imagePreview && (
