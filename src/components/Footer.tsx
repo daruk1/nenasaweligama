@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import nenasaLogo from "@/assets/nenasa-logo.jpeg";
-import { Phone, MapPin, MessageCircle } from "lucide-react";
+import { Phone, MapPin, MessageCircle, Music2 } from "lucide-react";
 
 const Footer = () => (
   <footer className="border-t bg-primary py-12 text-primary-foreground">
@@ -38,6 +38,14 @@ const Footer = () => (
               <MessageCircle className="h-4 w-4 text-accent"/> WhatsApp: 077 50 79 170
             </a>
             <span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-accent"/> Weligama, Sri Lanka</span>
+            <a
+              href="https://www.tiktok.com/@cool_english1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:text-accent transition-colors"
+            >
+              <Music2 className="h-4 w-4 text-accent" /> TikTok: @cool_english1
+            </a>
           </div>
         </div>
       </div>

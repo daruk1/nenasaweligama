@@ -8,14 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { UserPlus, Clock, CheckCircle, Mail, LogOut, Download, QrCode, Copy } from "lucide-react";
+import { UserPlus, Clock, CheckCircle, Mail, LogOut, Download, QrCode, Copy, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import FadeIn from "@/components/FadeIn";
 import englishPromo from "@/assets/english-promo.jpeg";
 import englishPromo2028 from "@/assets/english-promo-2028.png";
 
-const subjects = ["English", "Mathematics", "Science", "ICT"] as const;
+const subjects = ["English", "Mathematics", "Science", "ICT", "Sinhala", "Commerce"] as const;
 const grades = ["Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11"] as const;
 
 const classes = [
@@ -283,7 +283,7 @@ const Register = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-16">
-        <Card className="mx-auto max-w-2xl border-0 shadow-[var(--card-shadow)]">
+        <Card className="mx-auto max-w-2xl liquid-glass-strong border-0">
           <CardHeader className="text-center">
             <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
               <UserPlus className="h-6 w-6 text-accent" />
@@ -295,6 +295,11 @@ const Register = () => {
                 <LogOut className="h-3 w-3" /> Sign out
               </button>
             </CardDescription>
+            <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-4 py-1.5 text-xs font-semibold text-success">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Your information is protected
+              <span aria-label="verified" className="text-base leading-none">✅</span>
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
