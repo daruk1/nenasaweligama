@@ -334,10 +334,10 @@ const DarukAiWidget = () => {
                   {messages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                       <div
-                        className={`max-w-[80%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
+                        className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed backdrop-blur-md border ${
                           m.role === "user"
-                            ? "bg-primary text-primary-foreground rounded-br-sm"
-                            : "bg-muted text-foreground rounded-bl-sm"
+                            ? "bg-primary/85 text-primary-foreground rounded-br-md border-white/10 shadow-lg shadow-primary/20"
+                            : "bg-card/70 text-foreground rounded-bl-md border-white/20 shadow-sm"
                         }`}
                       >
                         {m.imagePreview && (
