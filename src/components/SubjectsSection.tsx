@@ -31,6 +31,18 @@ const subjects = [
     emoji: "💻",
     color: "bg-[hsl(38,92%,50%)]",
   },
+  {
+    title: "Sinhala",
+    description: "Strengthen Sinhala language, literature, grammar and creative writing for academic success.",
+    emoji: "📝",
+    color: "bg-[hsl(0,70%,50%)]",
+  },
+  {
+    title: "Commerce",
+    description: "Master accounting, business studies and economics with practical, exam-focused lessons.",
+    emoji: "💼",
+    color: "bg-[hsl(200,70%,40%)]",
+  },
 ];
 
 const promos = [
@@ -73,7 +85,7 @@ const SubjectsSection = () => (
           </p>
         </div>
       </FadeIn>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {subjects.map((subject, i) => (
           <FadeIn key={subject.title} delay={150 * (i + 1)}>
             <SubjectCard {...subject} />
